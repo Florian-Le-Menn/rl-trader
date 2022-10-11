@@ -16,7 +16,7 @@ def fill_db(bp=False):
         file_name=r'\Users\flori\Desktop\bp_insider.html'
         price_table="bp_prices"
 
-    f = open(r'\Users\flori\Desktop\bp_insider.html',encoding="UTF-8")
+    f = open(file_name,encoding="UTF-8")
     html=f.read()
     prices_html = BeautifulSoup(html)
 
@@ -27,6 +27,9 @@ def fill_db(bp=False):
     except mysql.connector.Error as err:
         print(err)
     cursor = cnx.cursor()
+
+    query="TRUNCATE table {}".format(price_table)
+    cursor.execute(query)
 
     types_id={}
     query = ("SELECT id,rl_insider_name FROM item_type")
@@ -88,7 +91,7 @@ def fill_db(bp=False):
             cursor.fetchall()
             if(cursor.rowcount==0):
                 print("INSERT "+id_rl_insider+" "+item_name+" "+str(types_id[type])+" "+str(rarities_id[rarity]))
-                query="INSERT INTO item(id,name,type,rarity,id_rl_insider) VALUES(%s,%s,%s,%s)"
+                query="INSERT INTO item(id_rl_insider,name,type,rarity) VALUES(%s,%s,%s,%s)"
                 cursor.execute(query,(id_rl_insider,item_name,types_id[type],rarities_id[rarity],))
 
 
@@ -126,7 +129,8 @@ def fill_db(bp=False):
     if(bp==False):
         fill_db(True)
 
-### FILL INVENTORY #######################################################################################################
+
+### This function fill the table garage with data from my garage on rocket-league.com #############################
 
 def fill_inventory():
     for i in range(8):
@@ -401,6 +405,9 @@ def find_deals(sleep_time=2,skip=-1,debug=False):
     cursor.close()
     cnx.close()
 
-fill_db()
-#fill_inventory()
+
+### This function fills the database with the object information and prices from rl.insider.gg/pc
+#fill_db()
+### This function fill the table garage with data from my garage on rocket-league.com #############################
+#☺fill_inventory()
 #find_deals(2,1494)
